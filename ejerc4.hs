@@ -60,3 +60,14 @@ direccionAstring (Per nom ap, dir, ciudad) = nom ++ " " ++ ap ++ "\n" ++ dirAstr
   where
     dirAstring (Calle calle num) = "c/ " ++ calle ++ ", " ++ show num
     dirAstring (Casa casa) = "casa " ++ casa
+
+{-
+  Para quitar la ultima funcion de dirAstring, se puede cambiar el data:
+  data Dir = ....
+    implements Show where
+        show =
+
+    escribir (x:xs) = show x ++ escribir xs
+
+    escribir xs = (putStr.unlines)([[x1++' '++x2,'casa '++y1,z] | (Per x1 x2, casa y1, z) <- xs] ++ [[x1 ++ ' '++x2, 'c/ '++y1++' '++show y2,z]|(Per x1 x2, calle y1 y2, z) <- xs])
+-}
