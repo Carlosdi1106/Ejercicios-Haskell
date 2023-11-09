@@ -100,3 +100,35 @@ dosM (z : zs) (x, y)
   | y <= z = dosM zs (y, z)
   | x < z = dosM zs (z, y)
   | otherwise = dosM zs (x, y)
+
+-- 9. Define el tipo algebraico data Racional = Int :/ Int como:
+data Racional = Int :/ Int
+
+--  Instancia de la clase Eq de forma que la igualdad coincida con su definición matemática en los números racionales. Ejemplo: 1:/2 es igual a 2:/4
+instance Eq Racional where (x :/ y) == (p :/ q) = (x * q == y * p)
+
+--  Instancia de la clase Ord de forma que el orden coincida con su definición matemática en los números racionales. Ejemplo: 1:/4 es menor que 3:/5
+-- Nota: Basta definir el método (<=) y para el resto de métodos considerar la definición por defecto.
+instance Ord Racional where (x :/ y) <= (p :/ q) = (x * q <= y * p)
+
+--  Instancia de la clase Show de manera que se muestren los elementos lo más reducidos posible. Ejemplo: 15:/6 se muestra como 5/2 y 8:/2 como 4.
+instance Show Racional where
+  show (x :/ y)
+    | denominador == 1 = show numerador
+    | otherwise = show numerador ++ "/" ++ show denominador
+    where
+      z = mcd x y
+      numerador = div x y
+      denominador = div y z
+
+-- mcd da el maximo comun divisor de dos numeros:
+mcd :: Int -> Int -> Int
+mcd a b
+  | a == 0 && b == 0 = error "Los dos son cero"
+  | otherwise = mcd_pos (abs a) (abs b)
+
+-- mcd con dos numeros positivos.
+mcd_pos :: Int -> Int -> Int
+mcd_pos a b
+  | b == 0 = a
+  | otherwise = mcd_pos b (mod a b)
