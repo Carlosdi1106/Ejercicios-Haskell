@@ -71,3 +71,32 @@ direccionAstring (Per nom ap, dir, ciudad) = nom ++ " " ++ ap ++ "\n" ++ dirAstr
 
     escribir xs = (putStr.unlines)([[x1++' '++x2,'casa '++y1,z] | (Per x1 x2, casa y1, z) <- xs] ++ [[x1 ++ ' '++x2, 'c/ '++y1++' '++show y2,z]|(Per x1 x2, calle y1 y2, z) <- xs])
 -}
+
+-- 8. Dado el siguiente tipo algebraico data Elemento = E String Int deriving Show que permite representar palabras con un contador asociado a cada una.
+
+data Elemento = E String Int deriving (Show)
+
+-- -> Define las instancias de Eq y Ord necesarias para que los objetos del tipo Elemento puedan compararse y ordenarse con respecto a su componente de tipo String (sin que el contador afecte al orden).
+
+instance Eq Elemento where (E e1 _) == (E e2 _) = e1 == e2
+
+instance Ord Elemento where (E e1 _) <= (E e2 _) = e1 <= e2
+
+-- -> Define una función dosMayores :: [Elemento]  (Elemento, Elemento) que obtenga el par formado por los dos elementos mayores de la lista dada, según el orden definido arriba. La función dosMayores debe recorrer la lista una única vez
+-- dosMayores [E "a" 2, E "b" 3, E "c" 5, E "d" 7] = (E "c" 5,E "d" 7)
+-- dosMayores [E "a" 2, E "b" 3, E "c" 5, E "a" 7] = (E "b" 3,E "c" 5)
+-- El primer Elemento es el menor de los dos.
+
+dosMayores :: [Elemento] -> (Elemento, Elemento)
+dosMayores [] = error "No hay lista"
+dosMayores [x] = error "Se necesita al menos dos elementos"
+dosMayores (x : y : xs)
+  | x < y = dosM xs (x, y)
+  | otherwise = dosM xs (y, x)
+
+dosM :: [Elemento] -> (Elemento, Elemento) -> (Elemento, Elemento)
+dosM [] (x, y) = (x, y)
+dosM (z : zs) (x, y)
+  | y <= z = dosM zs (y, z)
+  | x < z = dosM zs (z, y)
+  | otherwise = dosM zs (x, y)
