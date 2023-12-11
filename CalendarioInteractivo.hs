@@ -10,12 +10,10 @@ import Calendario -- importar el modulo de la Practica 1
 
 -------------------------------------
 
-hola :: Columna -> Year -> IO ()
-hola c b = printCalendario c b
 
 -- Función para validar el año
 validarAnio :: Int -> Bool
-validarAnio anio = anio > 0 && anio < 10000
+validarAnio anio = anio > 0 && anio < 2500
 
 -- Función para validar el número de columnas
 validarColumnas :: Int -> Bool
@@ -30,7 +28,7 @@ pedirAnio = do
   if validarAnio anio
     then return anio
     else do
-      putStrLn "Año no válido. Debe ser un valor positivo y menor a 10000."
+      putStrLn "Año no válido. Debe ser un año mayor que 0 y menor que 2500."
       pedirAnio
 
 -- Función principal para obtener el número de columnas del usuario
@@ -45,8 +43,8 @@ pedirColumnas = do
       putStrLn "Número de columnas no válido. Debe ser 3 ó 4."
       pedirColumnas
 
-consultaCalendario :: IO()
-consultaCalendario = do
+main :: IO ()
+main = do
   a <- pedirAnio
   c <- pedirColumnas
   printCalendario c a

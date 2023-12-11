@@ -64,7 +64,7 @@ listaDibCorrectos xs = auxListaDibCorrecto (tail xs) (ancho (head xs)) (alto (he
 alto :: Dibujo -> Int
 -- Pre: dib es un dibujo correcto.
 -- alto dib da la altura de dib.
-alto xs = foldl' (\acc _ -> acc + 1) 0 xs
+alto xs = length xs
 
 ancho :: Dibujo -> Int
 -- Pre: dib es un dibujo correcto.
@@ -136,7 +136,7 @@ meses :: Year -> [(String, Year, Int, Int)]
 -- meses n devuelve una lista de 12 elementos con los datos
 --         relevantes de cada uno de los meses del año n:
 --         (nombre_mes, n, primer_día_mes, longitud_mes)
-meses n = zip4 nombresmeses (repeat n) (pdias n) (nombresDiasPorMes n)
+meses n = zip4 nombresmeses (repeat n) (pdias n) (longitudDelMes n)
 
 dibujomes :: (String, Year, Int, Int) -> Dibujo
 -- dibujomes (nm,a,pd,lm) devuelve un dibujo de dimensiones 10x25
@@ -156,7 +156,7 @@ pdias :: Year -> [Int]
 --          1=lunes, 2=martes, ..., 6=sabado y 7=domingo
 -- Ejemplo: pdias 2019 es [2,5,5,1,3,6,1,4,7,2,5,7]
 
-pdias a = listaa (ene1 a) (nombresDiasPorMes a)
+pdias a = listaa (ene1 a) (longitudDelMes a)
 
 nombresmeses :: [String]
 nombresmeses =
@@ -203,20 +203,18 @@ dibujomesFinalAux xs ind = [concat (concat (take 7 (drop (tirar ind) xs))) ++ re
   where
     tirar ind = 7 * (ind - 1)
 
-longitudDelMes :: Year -> Int -> Int
-longitudDelMes a mes
-  | mes `elem` [1, 3, 5, 7, 8, 10, 12] = 31
-  | mes `elem` [4, 6, 9, 11] = 30
-  | mes == 2 && esBisiesto a = 29
+longitudDelMes :: Year -> [Int]
+longitudDelMes a = [31, (feb a), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+feb :: Year -> Int
+feb a
+  | esBisiesto a = 29
   | otherwise = 28
 
 esBisiesto :: Year -> Bool
 esBisiesto a
   | (a `mod` 4 == 0 && a `mod` 100 /= 0) || (a `mod` 400 == 0) = True
   | otherwise = False
-
-nombresDiasPorMes :: Year -> [Int]
-nombresDiasPorMes a = [longitudDelMes a mes | mes <- [1 .. 12]]
 
 listaa :: Year -> [Int] -> [Int]
 listaa _ [] = []
