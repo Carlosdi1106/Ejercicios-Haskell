@@ -31,4 +31,6 @@ milista = [listaHasta i | i <- [1 ..]]
   where
     listaHasta i = [i] ++ replicate i 0
 
-milista2 = 1 : zipWith
+milista2 = [1, 0] : map f milista2
+  where
+    f (x : r) = (x + 1 : 0 : r)
