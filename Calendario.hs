@@ -145,10 +145,9 @@ dibujomes :: (String, Year, Int, Int) -> Dibujo
 dibujomes (m, a, b, c) = dibujomesParteFinal (fechas b c) (dibujomesInicio m a) 1
 
 ene1 :: Year -> Int
-ene1 a = mod (a + div (a - 1) 4 - div (a - 1) 100 + div (a - 1) 400) 7
-
 -- ene1 a devuelve el dia de la semana del 1 de enero del año a
 --        siendo 1=lunes, 2=martes, ..., 6=sabado, 0=domingo
+ene1 a = mod (a + div (a - 1) 4 - div (a - 1) 100 + div (a - 1) 400) 7
 
 pdias :: Year -> [Int]
 -- pdias a  devuelve una lista con 12 dias que son los dias de la
@@ -156,9 +155,10 @@ pdias :: Year -> [Int]
 --          1=lunes, 2=martes, ..., 6=sabado y 7=domingo
 -- Ejemplo: pdias 2019 es [2,5,5,1,3,6,1,4,7,2,5,7]
 
-pdias a = listaa (ene1 a) (longitudDelMes a)
+pdias a = obtenerDiasInicioMeses (ene1 a) (longitudDelMes a)
 
 nombresmeses :: [String]
+-- nombresmeses es una lista de los nombres de los meses en orden.
 nombresmeses =
   [ "Enero",
     "Febrero",
@@ -191,36 +191,41 @@ fechas pd lm = [[dias x] | x <- [1 .. 42]] ---falta añadir \n
 -- otras funciones que se necesiten:
 
 dibujomesInicio :: String -> Year -> [String]
+-- dibujomesInicio crea la parte inicial del dibujo del mes, incluyendo el título y el año.
 dibujomesInicio f a = [" " ++ f ++ " " ++ show a ++ replicate (25 - (length f + length (show a) + 2)) ' '] ++ [replicate 25 ' '] ++ [" Lu Ma Mi Ju Vi Sa Do    "]
 
 dibujomesParteFinal :: [Dibujo] -> Dibujo -> Int -> Dibujo
+-- dibujomesParteFinal completa el dibujo del mes agregando las fechas y los espacios en blanco necesarios.
 dibujomesParteFinal xs ys cont
   | cont <= 6 = dibujomesParteFinal xs (ys ++ dibujomesFinalAux xs cont) (cont + 1)
   | otherwise = ys ++ [replicate 25 ' ']
 
 dibujomesFinalAux :: [Dibujo] -> Int -> Dibujo
+-- dibujomesFinalAux toma las fechas de la parte final del mes y las concatena para formar líneas completas.
 dibujomesFinalAux xs ind = [concat (concat (take 7 (drop (tirar ind) xs))) ++ replicate 4 ' ']
   where
     tirar ind = 7 * (ind - 1)
 
 longitudDelMes :: Year -> [Int]
+-- longitudDelMes devuelve la cantidad de dias de cada mes en el año, incluyendo febrero con la corrección de año bisiesto.
 longitudDelMes a = [31, (feb a), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 feb :: Year -> Int
+-- feb devuelve la longitud de febrero en un año, 29 si es bisiesto y 28 si no lo es.
 feb a
   | esBisiesto a = 29
   | otherwise = 28
 
 esBisiesto :: Year -> Bool
-esBisiesto a
-  | (a `mod` 4 == 0 && a `mod` 100 /= 0) || (a `mod` 400 == 0) = True
-  | otherwise = False
+-- esBisiesto verifica si un año es bisiesto.
+esBisiesto a = (a `mod` 4 == 0 && a `mod` 100 /= 0) || (a `mod` 400 == 0)
 
-listaa :: Year -> [Int] -> [Int]
-listaa _ [] = []
-listaa x (y : ys)
-  | x < 7 = [x] ++ listaa (x + y) ys
-  | x > 7 = listaa (x - 7) (y : ys)
-  | otherwise = [x] ++ listaa (x + y) ys
+obtenerDiasInicioMeses :: Year -> [Int] -> [Int]
+-- obtenerDiasInicioMeses calcula los días de la semana en que comienza cada mes del año.
+obtenerDiasInicioMeses _ [] = []
+obtenerDiasInicioMeses x (y : ys)
+  | x < 7 = [x] ++ obtenerDiasInicioMeses (x + y) ys
+  | x > 7 = obtenerDiasInicioMeses (x - 7) (y : ys)
+  | otherwise = [x] ++ obtenerDiasInicioMeses (x + y) ys
 
 --------------------------------------------------------------------
